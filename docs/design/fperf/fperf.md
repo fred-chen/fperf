@@ -1,5 +1,4 @@
 # fperf
-a tcp/udp/rdma benchmark tool.
 
 - [fperf](#fperf)
   - [Overall](#overall)
@@ -135,7 +134,7 @@ STREAM 对象的典型使用方法是：
 
 STREAM 对象内部结构如下图所示：
 
-![fperf.drawio](docs/design/diagrams/fperf.drawio.svg)
+![fperf.drawio](../diagrams/fperf.drawio.svg)
 
 一个网络流由两个相互连接的 STRAM 对象组成。其中一个是 `主动模式STREAM`，由客户端创建；另一个是 `被动模式STREAM`,由服务端创建。
 当连接成功后，主动和被动模式的两个 STREAM 对象其实都没有区别，都可以通过读写向对端发送数据。
