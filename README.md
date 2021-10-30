@@ -18,6 +18,18 @@ a tcp/udp/rdma benchmark tool.
     - [n streams](#n-streams)
   - [参数回看](#%E5%8F%82%E6%95%B0%E5%9B%9E%E7%9C%8B)
 
+## Install
+```bash
+$ git clone https://github.com/fred-chen/fperf.git
+$ cd fperf
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release ../src/
+$ make -j
+$ ls main/fperf
+main/fperf
+```
+
 ## Overall
 
 fperf 工具旨在评估特定网络的 TCP，UDP，RDMA 的带宽（bw，BandWidth）及发送-接收延迟（lat，Latency）。
