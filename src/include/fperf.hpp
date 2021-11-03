@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <netinet/in.h>
