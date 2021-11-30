@@ -84,11 +84,14 @@ int server() {
             else if (config.settings.prot == PROTUDP) {
                 stream = new f_stream_udp(nullptr, std::to_string(atoi(RECVER_PORT)+i).c_str(), nullptr, nullptr, config.settings.qtype, config.settings.nsockets, config.settings.roundtrip);
             }
-            #ifdef AGM_RDMA
             else {
+            #ifdef AGM_RDMA
                 stream = new f_stream_rdma(nullptr, std::to_string(atoi(RECVER_PORT)+i).c_str(), nullptr, nullptr, config.settings.qtype, config.settings.nsockets, config.settings.roundtrip, 0, 0, &stream_control, config.settings.rdmadev);
-            }
+            #else
+                // if the platform doesn't support RDMA, use TCP instead
+                stream = new f_stream_tcp(nullptr, std::to_string(atoi(RECVER_PORT)+i).c_str(), nullptr, nullptr, config.settings.qtype, config.settings.nsockets, config.settings.roundtrip, config.settings.nodelay, config.settings.quickack);
             #endif
+            }
 
             // bind data stream
             if((err = stream->bind()) < 0) {
@@ -112,10 +115,10 @@ int server() {
             if(stream_control.send(q, sizeof(q)) != sizeof(q)) {
                 ERR("failed sending 'ready' to client");
             }
-            if((err = stream_control.strexpect(a))<0) {
+            if(!stream_control.strexpect(a)) {
                 ERR("failed sending ack to client.");
                 delete stream;
-                return err;
+                return -1;
             }
 
             // block and wait for data stream connection
@@ -385,8 +388,8 @@ int client(fsettings *config) {
 
     // client thread function
     auto client = [&config, &n, &buf](f_stream_interface* stream) -> void {
-        register size_t nleft = config->settings.size;
-        register size_t nsending;
+        size_t nleft = config->settings.size;
+        size_t nsending;
         #ifdef AGM_RDMA
         if(config->settings.prot == PROTRDMA) {
             if(!((f_stream_rdma*)stream)->set_recv_buffer(buf, config->settings.pktsize)) {

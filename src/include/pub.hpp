@@ -117,11 +117,11 @@ void errout(const char *msg = "") {
 struct agm_lockable {
     std::recursive_mutex _agm_lockable_mu;
 public:    
-    lock() {
+    void lock() {
         OUT("agm_lockable LOCKING...");
         _agm_lockable_mu.lock();
     }
-    unlock() noexcept {
+    void unlock() noexcept {
         OUT("agm_lockable UNLOCKING...");
         _agm_lockable_mu.unlock();
     }

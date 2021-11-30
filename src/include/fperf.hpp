@@ -6,7 +6,6 @@
  */
 #pragma once
 
-
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -17,7 +16,6 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <ifaddrs.h>
-#include <linux/if_packet.h>
 #include <net/ethernet.h>
 #include <assert.h>
 #include <netdb.h>
@@ -462,7 +460,7 @@ struct socket_ops_t rsocket_ops = {
 
 using TimePoint    = std::chrono::high_resolution_clock::time_point;
 using CounterClock = std::chrono::high_resolution_clock;
-constexpr static TimePoint TPEpoch{};       // the 'zero' timepoint
+static TimePoint TPEpoch{};       // the 'zero' timepoint
 
 /**
  * @brief stream classes that emulate a stream-like network transition
@@ -1741,14 +1739,16 @@ public:
         }
         if(_quickack) {
             // OUT("_connect: set TCP_QUICKACK");
+            #ifdef TCP_QUICKACK
             if (sock_ops->setsockopt(s, IPPROTO_TCP, TCP_QUICKACK, &on, sizeof(on)) < 0) {
                 sock_ops->close(s);
                 ERR("failed set 'TCP_QUICKACK'");
                 return -1;
             }
+            #endif // TCP_QUICKACK is not defined in darwin
         }
 
-        /* FIXME: this is no longer applicable, just keep it for a note
+        /* FIXME: following statement is no longer applicable, just keep it for a note
         * unlike UDP, for TCP it can't reuse(bind) the same local address 
         * while connect to the same peer address at the same time
         * because it will create duplication 5-value tuples in kernel:
@@ -1797,11 +1797,13 @@ public:
         }
         if(_quickack) {
             // OUT("accept: set TCP_QUICKACK");
+            #ifdef TCP_QUICKACK
             if (sock_ops->setsockopt(s, IPPROTO_TCP, TCP_QUICKACK, &on, sizeof(on)) < 0) {
                 sock_ops->close(s);
                 ERR("failed set 'TCP_QUICKACK'");
                 return -1;
             }
+            #endif // TCP_QUICKACK is not defined in darwin
         }
         return s;
     }
