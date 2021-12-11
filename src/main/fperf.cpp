@@ -351,6 +351,11 @@ int client(fsettings *config) {
             stream_client = new f_stream_rdma(nullptr, nullptr, config->settings.ip, std::to_string(atoi(RECVER_PORT)+i).c_str(), 
                 config->settings.qtype, config->settings.nsockets, config->settings.roundtrip, 0, 0, &stream_control, config->settings.rdmadev);
         }
+        #else 
+        else {
+            OUT("RDMA is not supported on this system.");
+            return 0;
+        }
         #endif
 
         // OUT("client data stream connecting connecting.");
